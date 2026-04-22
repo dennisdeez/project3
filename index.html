@@ -2,22 +2,40 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Walk-in Street View</title>
+    <title>Walkable Virtual Street</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <a-scene 
-      webxr="optionalFeatures: hit-test, local-floor; referenceSpaceType: local-floor"
-      ar-mode-ui="enabled: true">
+      renderer="antialias: true; precision: medium; logarithmicDepthBuffer: true;"
+      webxr="referenceSpaceType: local-floor; requiredFeatures: local-floor;"
+      ar-mode-ui="enabled: true;">
       
       <a-assets>
         <img id="panorama" src="street.jpeg">
       </a-assets>
 
-      <a-sky src="#panorama" rotation="0 -90 0"></a-sky>
+      <a-sky src="#panorama" radius="500" rotation="0 -90 0"></a-sky>
 
-      <a-entity camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      <a-entity id="rig" position="0 0 0">
+        <a-entity camera 
+          look-controls="pointerLockEnabled: true; magicWindowTrackingEnabled: true; touchEnabled: true;" 
+          wasd-controls="acceleration: 20;"
+          position="0 1.6 0">
+        </a-entity>
+      </a-entity>
 
     </a-scene>
+
+    <script>
+      // This forces the frame rate to lock, preventing the 'shiver' 
+      // caused by high-frequency sensor updates on newer phones.
+      const sceneEl = document.querySelector('a-scene');
+      sceneEl.addEventListener('loaded', () => {
+        const camera = sceneEl.camera;
+        camera.near = 0.1;
+        camera.far = 1000;
+      });
+    </script>
   </body>
 </html>
